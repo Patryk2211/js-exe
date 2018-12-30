@@ -1,0 +1,13 @@
+function printNumbers()
+{
+	var number1 = document.getElementById("field1").value;
+	var number2 = document.getElementById("field2").value;
+
+	if(number2 >= number1)
+	{
+		for(var i = number1; i <= number2; i++)
+			document.write(i, " ");
+	}
+	else document.getElementById("result").innerHTML="First value can't be reater than second";
+	
+}

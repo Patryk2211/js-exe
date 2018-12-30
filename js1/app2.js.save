@@ -1,0 +1,5 @@
+console.log(); //global
+
+var message = '';
+console.log(global.message);
+
