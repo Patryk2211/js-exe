@@ -11,10 +11,21 @@ router.get('/', (req, res, next) => {
         .then(docs => {
             const response = {
                 count: docs.length,
-                films: docs
+                films: docs.map(doc => {
+                    return {
+                        title: doc.title,
+                        rating: doc.rating,
+                        comment: doc.comment,
+                        _id: doc._id,
+                        request: {
+                            type: 'GET',
+                            url: 'http://localhost:3000/films/' + doc._id
+                        }
+                    }
+                })
             };
             if(docs.length >= 0) {
-                res.status(200).json(docs);
+                res.status(200).json(response);
             } else {
                 res.status(404).json({
                     message: 'No entries found'
@@ -41,8 +52,17 @@ router.post('/', (req, res, next) => {
         .then(result => {
             console.log(result);
             res.status(201).json({
-                message: 'Handling POST requets to /films',
-                createdFilm: result
+                message: 'Created entry successfully',
+                createdFilm: {
+                    title: result.title,
+                    rating: result.rating,
+                    comment: result.comment,
+                    _id: result._id,
+                    request: {
+                        type: 'GET',
+                        URL: 'http://localhost:3000/films/' + result._id
+                    }
+                }
             });
       })
         .catch(err => {
@@ -56,11 +76,19 @@ router.post('/', (req, res, next) => {
 router.get('/:filmId', (req, res, next) => {
     const id = req.params.filmId;
     Film.findById(id)
+        .select('title rating comment _id')
         .exec()
         .then(doc => {
             console.log("From database", doc);
             if(doc) {
-                res.status(200).json(doc);
+                res.status(200).json({
+                    film: doc,
+                    request: {
+                        type: 'GET',
+                        description: 'Get all films',
+                        url: 'http://localhost:3000/films'
+                    }
+                });
             } else {
                 res.status(404).json({message: 'No valid entry found for provided ID'});
             }
@@ -80,8 +108,13 @@ router.patch('/:filmId', (req, res, next) => {
     Film.update({_id: id}, { $set: updateOps })
         .exec()
         .then(result => {
-            console.log(result);
-            res.status(200).json(result);
+            res.status(200).json({
+                message: 'Entry updated',
+                request: {
+                    type: 'GET',
+                    url: 'http://localhost:3000/films' + id
+                }
+            });
         })
         .catch(err => {
             console.log(err);
