@@ -2,16 +2,16 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 
-const Film = require('../models/film');
+const Movie = require('../models/movie');
 
 router.get('/', (req, res, next) => {
-    Film.find()
+    Movie.find()
         .select('title rating comment _id')
         .exec()
         .then(docs => {
             const response = {
                 count: docs.length,
-                films: docs.map(doc => {
+                movies: docs.map(doc => {
                     return {
                         title: doc.title,
                         rating: doc.rating,
@@ -19,7 +19,7 @@ router.get('/', (req, res, next) => {
                         _id: doc._id,
                         request: {
                             type: 'GET',
-                            url: 'http://localhost:3000/films/' + doc._id
+                            url: 'http://localhost:3000/movies/' + doc._id
                         }
                     }
                 })
@@ -41,26 +41,26 @@ router.get('/', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
-    const film = new Film({
+    const movie = new Movie({
         _id: new mongoose.Types.ObjectId(),
         title: req.body.title,
         rating: req.body.rating,
         comment: req.body.comment
     });
-    film
+    movie
         .save()
         .then(result => {
             console.log(result);
             res.status(201).json({
                 message: 'Created entry successfully',
-                createdFilm: {
+                createdMovie: {
                     title: result.title,
                     rating: result.rating,
                     comment: result.comment,
                     _id: result._id,
                     request: {
                         type: 'GET',
-                        URL: 'http://localhost:3000/films/' + result._id
+                        URL: 'http://localhost:3000/movies/' + result._id
                     }
                 }
             });
@@ -73,20 +73,20 @@ router.post('/', (req, res, next) => {
         });
 });
 
-router.get('/:filmId', (req, res, next) => {
-    const id = req.params.filmId;
-    Film.findById(id)
+router.get('/:movieId', (req, res, next) => {
+    const id = req.params.movieId;
+    Movie.findById(id)
         .select('title rating comment _id')
         .exec()
         .then(doc => {
             console.log("From database", doc);
             if(doc) {
                 res.status(200).json({
-                    film: doc,
+                    movie: doc,
                     request: {
                         type: 'GET',
-                        description: 'Get all films',
-                        url: 'http://localhost:3000/films'
+                        description: 'Get all movies',
+                        url: 'http://localhost:3000/movies'
                     }
                 });
             } else {
@@ -99,20 +99,20 @@ router.get('/:filmId', (req, res, next) => {
         });
 });
 
-router.patch('/:filmId', (req, res, next) => {
-    const id = req.params.filmId;
+router.patch('/:movieId', (req, res, next) => {
+    const id = req.params.movieId;
     const updateOps = {};
     for(const ops of req.body) {
         updateOps[ops.propName] = ops.value;
     }
-    Film.update({_id: id}, { $set: updateOps })
+    Movie.update({_id: id}, { $set: updateOps })
         .exec()
         .then(result => {
             res.status(200).json({
                 message: 'Entry updated',
                 request: {
                     type: 'GET',
-                    url: 'http://localhost:3000/films' + id
+                    url: 'http://localhost:3000/movies' + id
                 }
             });
         })
@@ -124,9 +124,9 @@ router.patch('/:filmId', (req, res, next) => {
         });
 });
 
-router.delete('/:filmId', (req, res, next) => {
-    const id = req.params.filmId;
-    Film.remove({_id: id})
+router.delete('/:movieId', (req, res, next) => {
+    const id = req.params.movieId;
+    Movie.remove({_id: id})
         .exec()
         .then(result => {
             res.status(200).json(result);

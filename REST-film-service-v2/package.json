@@ -8,7 +8,7 @@
     "start": "nodemon server.js"
   },
   "keywords": [
-    "silm/series",
+    "movies/series",
     "service"
   ],
   "author": "Patryk Kluz",
