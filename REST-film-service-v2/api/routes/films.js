@@ -3,7 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 
 const Film = require('../models/film');
-//dziaaj
+
 router.get('/', (req, res, next) => {
     Film.find()
         .select('title rating comment _id')
