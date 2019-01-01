@@ -129,7 +129,15 @@ router.delete('/:movieId', (req, res, next) => {
     Movie.remove({_id: id})
         .exec()
         .then(result => {
-            res.status(200).json(result);
+            res.status(200).json({
+                message: 'Entry deleted',
+                request: {
+                    type: 'POST',
+                    description: 'Create a new one!',
+                    url: 'http://localhost:3000/movies',
+                    body: { title: 'String', rating: 'Number', comment: 'Number' }
+                }
+            });
         })
         .catch(err => {
             console.log(err);
