@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 
 const movieRoutes = require('./api/routes/movies');
 const postRoutes = require('./api/routes/posts');
+const userRoutes = require('./api/routes/users');
 
 mongoose.connect('mongodb://film-service:WblkBk3D@rest-film-service-shard-00-00-i3hdj.mongodb.net:27017,rest-film-service-shard-00-01-i3hdj.mongodb.net:27017,rest-film-service-shard-00-02-i3hdj.mongodb.net:27017/test?ssl=true&replicaSet=REST-film-service-shard-0&authSource=admin&retryWrites=true', { useNewUrlParser: true });
 mongoose.Promise = global.Promise;
@@ -27,6 +28,7 @@ app.use((req, res, next) => {
 
 app.use('/movies', movieRoutes);
 app.use('/posts', postRoutes);
+app.use('/users', userRoutes);
 
 app.use((req, res, next) => {
 	const error = new Error('Not found');
