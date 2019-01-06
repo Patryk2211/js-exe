@@ -3,10 +3,10 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const checkAuth = require('../middleware/check-auth');
 
-const Movie = require('../models/movie');
+const TVSeries = require('../models/series');
 
 router.get('/', (req, res, next) => {
-    Movie.find()
+    TVSeries.find()
         .select('title rating comment _id')
         .exec()
         .then(docs => {
@@ -42,19 +42,19 @@ router.get('/', (req, res, next) => {
 });
 
 router.post('/', checkAuth, (req, res, next) => {
-    const movie = new Movie({
+    const series = new TVSeries({
         _id: new mongoose.Types.ObjectId(),
         title: req.body.title,
         rating: req.body.rating,
         comment: req.body.comment
     });
-    movie
+    series
         .save()
         .then(result => {
             console.log(result);
             res.status(201).json({
                 message: 'Created entry successfully',
-                createdMovie: {
+                createdSeries: {
                     title: result.title,
                     rating: result.rating,
                     comment: result.comment,
@@ -74,16 +74,16 @@ router.post('/', checkAuth, (req, res, next) => {
         });
 });
 
-router.get('/:movieId', (req, res, next) => {
-    const id = req.params.movieId;
-    Movie.findById(id)
+router.get('/:seriesId', (req, res, next) => {
+    const id = req.params.seriesId;
+    TVSeries.findById(id)
         .select('title rating comment _id')
         .exec()
         .then(doc => {
             console.log("From database", doc);
             if(doc) {
                 res.status(200).json({
-                    movie: doc,
+                    series: doc,
                     request: {
                         type: 'GET',
                         description: 'Get all movies',
@@ -100,13 +100,13 @@ router.get('/:movieId', (req, res, next) => {
         });
 });
 
-router.patch('/:movieId', checkAuth, (req, res, next) => {
-    const id = req.params.movieId;
+router.patch('/:seriesId', checkAuth, (req, res, next) => {
+    const id = req.params.seriesId;
     const updateOps = {};
     for(const ops of req.body) {
         updateOps[ops.propName] = ops.value;
     }
-    Movie.update({_id: id}, { $set: updateOps })
+    TVSeries.update({_id: id}, { $set: updateOps })
         .exec()
         .then(result => {
             res.status(200).json({
@@ -125,9 +125,9 @@ router.patch('/:movieId', checkAuth, (req, res, next) => {
         });
 });
 
-router.delete('/:movieId', checkAuth, (req, res, next) => {
-    const id = req.params.movieId;
-    Movie.remove({_id: id})
+router.delete('/:seriesId', checkAuth, (req, res, next) => {
+    const id = req.params.seriesId;
+    TVSeries.remove({_id: id})
         .exec()
         .then(result => {
             res.status(200).json({

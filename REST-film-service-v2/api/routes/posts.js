@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const checkAuth = require('../middleware/check-auth');
 
 const Post = require('../models/post');
 const Movie = require('../models/movie');
@@ -33,7 +34,7 @@ router.get('/', (req, res, next) => {
         })
 });
 
-router.post('/', (req, res, next) => {
+router.post('/', checkAuth, (req, res, next) => {
     Movie.findById(req.body.movieId)
         .then(movie => {
             if(!movie) {
@@ -97,7 +98,7 @@ router.get('/:postId', (req, res, next) => {
 
 });
 
-router.delete('/:postId', (req, res, next) => {
+router.delete('/:postId', checkAuth, (req, res, next) => {
     Post.remove({ _id: req.params.postId })
         .exec()
         .then(result => {
